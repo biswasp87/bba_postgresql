@@ -46,6 +46,7 @@ navbar = dbc.Navbar(
                         dbc.NavItem(dbc.DropdownMenu(
                             children=[
                                 dbc.DropdownMenuItem("FNO Stock", href="/c-analysis-stocks-bq", external_link=True, target='_blank'),
+                                dbc.DropdownMenuItem("FNO Stock Short", href="/d-analysis-stocks-bq", external_link=True, target='_blank'),
                                 dbc.DropdownMenuItem("FNO Option", href="/c1-stock-option-bq", external_link=True, target='_blank'),
                             ],
                             nav=True,
