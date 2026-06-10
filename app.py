@@ -109,4 +109,4 @@ app.layout = dbc.Container([dcc.Store(id="df_indicator", data=[], storage_type='
                             navbar, dash.page_container], fluid=True)
 
 if __name__ == '__main__':
-    app.run_server(debug=False, host="0.0.0.0", port=8080)
+    app.run(debug=False, host="0.0.0.0", port=8080)
