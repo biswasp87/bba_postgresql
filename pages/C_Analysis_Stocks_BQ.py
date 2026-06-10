@@ -254,7 +254,7 @@ content_third_row = dbc.Row([
                         id='dropdown_opt',
                         options=[{'label': x, 'value': x}
                                  for x in dropdown_opt_list.DRP_OPT],
-                        value=dropdown_opt_list.DRP_OPT[0],  # default value
+                        value=dropdown_opt_list.DRP_OPT[1],  # default value
                         multi=False,
                         optionHeight=25,
                     ),
@@ -709,8 +709,14 @@ def update_graph_31(dropdown_exp_value, dropdown_value, dropdown_opt_value, drop
         WHERE SYMBOL = '{dropdown_value}'
         ORDER BY TIMESTAMP DESC LIMIT {dropdown_n_days_value}
     """
-    df_stock = client.query(sql_stock).to_dataframe()
+    # df_stock = client.query(sql_stock).to_dataframe()
+
+    gcs_path = "gs://json_eq_fno_opt_master_data/stocks/" + dropdown_value+ ".json"
+
+    # Read directly into a DataFrame
+    df_stock = pd.read_json(gcs_path)
     df_stock = df_stock.sort_values(by='TIMESTAMP', ascending=True)
+    df_stock= df_stock.tail(dropdown_n_days_value)
     df_stock["BAR"] = df_stock["BAR"].astype(int)
     df_stock = df_stock.reset_index()
 
