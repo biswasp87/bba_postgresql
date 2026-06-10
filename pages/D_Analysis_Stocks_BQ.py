@@ -408,6 +408,8 @@ def update_graph_31(dropdown_exp_value, dropdown_value, dropdown_opt_value, drop
                     short_sma, medium_sma, long_sma, graph_height,b_band,kc):
     expiry_date = datetime.strptime(dropdown_exp_value, "%Y-%m-%d").date()
 
+    # Import Data from Big Query
+    # _______________________________________________________________________________________________________________
     client = bigquery.Client()
     sql_stock = f"""
         SELECT TIMESTAMP, CUR_FUT_EXPIRY_DT,NEAR_FUT_EXPIRY_DT, 
@@ -426,10 +428,37 @@ def update_graph_31(dropdown_exp_value, dropdown_value, dropdown_opt_value, drop
     """
     # df_stock = client.query(sql_stock).to_dataframe()
 
-    gcs_path = "gs://json_eq_fno_opt_master_data/stocks/" + dropdown_value+ ".json"
+    # # Import Data from Cloud storage Bucket (JSON)
+    # # _______________________________________________________________________________________________________________
+    # gcs_path = "gs://json_eq_fno_opt_master_data/stocks/" + dropdown_value+ ".json"
+    # # Read directly into a DataFrame
+    # df_stock = pd.read_json(gcs_path)
 
-    # Read directly into a DataFrame
-    df_stock = pd.read_json(gcs_path)
+    # Import Data from Render Postgre SQL
+    # _______________________________________________________________________________________________________________
+    # 1. Retrieve your External Database URL from your Render.com dashboard.
+    # It usually looks like: postgresql://user:password@external_host:port/database_name
+    RENDER_EXTERNAL_DB_URL = "postgresql://prasenjit:rrbhbSbyRcNAQkmiPbjlLKkw4zwIKqxi@dpg-d8kkilho3t8c73eu0nu0-a.oregon-postgres.render.com/bigbullanalysis_db"
+
+    # Note: Render enforces SSL for external connections. If you face SSL/TLS errors,
+    # append '?sslmode=require' to the end of your string, or use the argument below.
+    if "?sslmode=" not in RENDER_EXTERNAL_DB_URL:
+        RENDER_EXTERNAL_DB_URL += "?sslmode=require"
+
+        from sqlalchemy import create_engine
+        # 2. Create the SQLAlchemy connection engine
+        engine = create_engine(RENDER_EXTERNAL_DB_URL)
+
+        # 3. Define your SQL query string
+        query = "SELECT * FROM postgresql_eq_fno_opt_master_data;"
+
+        # 4. Use pandas to execute the query and convert it to a DataFrame
+        df_stock = pd.read_sql(query, con=engine)
+        # 5. Display the first few rows of your new DataFrame
+        print("Data fetched successfully!")
+        # print(df.head())
+
+
     df_stock = df_stock.sort_values(by='TIMESTAMP', ascending=True)
     df_stock= df_stock.tail(dropdown_n_days_value)
     df_stock["BAR"] = df_stock["BAR"].astype(int)
