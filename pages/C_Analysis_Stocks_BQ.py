@@ -29,7 +29,7 @@ import telegram
 # _____________________________________________________________________________________
 API_KEY = "6815271407:AAGGMeMYtsDBLSaZPySktp-aU1fmO5A3y5Y"
 CHANNEL_ID = "@BigBullAnalysis360"
-bot = telegram.Bot(token=API_KEY)
+# bot = telegram.Bot(token=API_KEY)
 
 # _____________________________________________________________________________________
 # Pulling Data from Google Cloud Storage
@@ -52,7 +52,7 @@ trade_layout = dbc.Row([
                             id='bba_symbol',
                             options=[{'label': x, 'value': x}
                                      for x in watchlist.Symbol],
-                            value='TATAMOTORS',  # default value
+                            value='TMPV',  # default value
                             maxHeight=150,
                         ),
                         dcc.Dropdown(
@@ -265,7 +265,7 @@ content_third_row = dbc.Row([
                                 id='dropdown',
                                 options=[{'label': x, 'value': x}
                                          for x in watchlist.Symbol],
-                                value='TATAMOTORS',  # default value
+                                value='TMPV',  # default value
                                 maxHeight=150,
                             ),
                         ),
@@ -430,76 +430,76 @@ content = html.Div(
 
 layout = html.Div([html.Br(), content, dcc.Store(id="df_shortlisted", data=[], storage_type='session')])
 
-# _____________________________________________________________________________________
-# Function to prepare Alert database and upload to Big Query
-# _____________________________________________________________________________________
-@callback(
-        Output('alert_status','children'),
-        Input('dropdown', 'value'),
-        Input('condition', 'value'),
-        Input('bba_condition_price', 'value'),
-        Input('place_alert', 'n_clicks')
-)
-def place_alert(bba_symbol_val,
-                bba_condition_value, bba_condition_price,
-                place_alert_click):
-    alert_status = ""
-
-    ctx = dash.callback_context
-    trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
-    alert_date = str(date.today())
-
-    if trigger_id == 'place_alert':
-        index_symbol = [[f'{alert_date}', f'{bba_condition_value}', f'{bba_symbol_val}', f'{bba_condition_price}', "",'ACTIVE']]
-        index_symbol_df = pd.DataFrame(index_symbol,
-                                           columns=['Alert_Date', 'Alert_Condition', 'Alert_Symbol', 'Alert_Price', 'Trigger_Date', 'Alert_Status'])
-        telegram_message = f"""{bba_condition_value} TRADE\n{bba_symbol_val}\nEntry Price:{bba_condition_price}"""
-
-    client = bigquery.Client()
-    table_id = 'phrasal-fire-373510.alert_order.alert'
-    project = "WRITE_APPEND"
-    job_config = bigquery.LoadJobConfig(
-        schema=[
-            bigquery.SchemaField("Alert_Date", "STRING", mode="REQUIRED"),
-            bigquery.SchemaField("Alert_Condition", "STRING", mode="REQUIRED"),
-            bigquery.SchemaField("Alert_Symbol", "STRING", mode="REQUIRED"),
-            bigquery.SchemaField("Alert_Price", "STRING", mode="REQUIRED"),
-            bigquery.SchemaField("Trigger_Date", "STRING", mode="NULLABLE"),
-            bigquery.SchemaField("Alert_Status", "STRING", mode="REQUIRED"),
-            # bigquery.SchemaField("EXPIRY_DT", "DATE", mode="REQUIRED"),
-            ],
-        write_disposition=project)
-    try:
-        try:
-            client.get_table(table_id)  # Make an API request.
-            print("Table {} already exists.".format(table_id))
-            # Upload Current Dataframe
-            job = client.load_table_from_dataframe(index_symbol_df, table_id,
-                                                   job_config=job_config)  # Make an API request.
-            job.result()  # Wait for the job to complete.
-            table = client.get_table(table_id)  # Make an API request.
-            print("Loaded {} rows and {} columns to {}".format(table.num_rows, len(table.schema), table_id))
-
-            bot.sendMessage(chat_id=CHANNEL_ID,
-                            text=telegram_message)  # Telegram Bot for pushing message in telegram
-            alert_status = f'Alert Created for {bba_symbol_val}'
-        except NotFound:
-            print("Table {} is not found. Proceed to create table".format(table_id))
-            client.create_table(table_id)  # API request
-            print(f"Created {table_id}.")
-            # Upload Current Dataframe
-            job = client.load_table_from_dataframe(index_symbol_df, table_id,
-                                                   job_config=job_config)  # Make an API request.
-            job.result()  # Wait for the job to complete.
-
-            table = client.get_table(table_id)  # Make an API request.
-            print("Loaded {} rows and {} columns to {}".format(table.num_rows, len(table.schema), table_id))
-            alert_status = f'Alert Created for {bba_symbol_val}'
-    except exception as e:
-        print(e)
-        alert_status = f'ERROR in Creating Alert'
-
-    return alert_status
+# # _____________________________________________________________________________________
+# # Function to prepare Alert database and upload to Big Query
+# # _____________________________________________________________________________________
+# @callback(
+#         Output('alert_status','children'),
+#         Input('dropdown', 'value'),
+#         Input('condition', 'value'),
+#         Input('bba_condition_price', 'value'),
+#         Input('place_alert', 'n_clicks')
+# )
+# def place_alert(bba_symbol_val,
+#                 bba_condition_value, bba_condition_price,
+#                 place_alert_click):
+#     alert_status = ""
+#
+#     ctx = dash.callback_context
+#     trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
+#     alert_date = str(date.today())
+#
+#     if trigger_id == 'place_alert':
+#         index_symbol = [[f'{alert_date}', f'{bba_condition_value}', f'{bba_symbol_val}', f'{bba_condition_price}', "",'ACTIVE']]
+#         index_symbol_df = pd.DataFrame(index_symbol,
+#                                            columns=['Alert_Date', 'Alert_Condition', 'Alert_Symbol', 'Alert_Price', 'Trigger_Date', 'Alert_Status'])
+#         telegram_message = f"""{bba_condition_value} TRADE\n{bba_symbol_val}\nEntry Price:{bba_condition_price}"""
+#
+#     client = bigquery.Client()
+#     table_id = 'phrasal-fire-373510.alert_order.alert'
+#     project = "WRITE_APPEND"
+#     job_config = bigquery.LoadJobConfig(
+#         schema=[
+#             bigquery.SchemaField("Alert_Date", "STRING", mode="REQUIRED"),
+#             bigquery.SchemaField("Alert_Condition", "STRING", mode="REQUIRED"),
+#             bigquery.SchemaField("Alert_Symbol", "STRING", mode="REQUIRED"),
+#             bigquery.SchemaField("Alert_Price", "STRING", mode="REQUIRED"),
+#             bigquery.SchemaField("Trigger_Date", "STRING", mode="NULLABLE"),
+#             bigquery.SchemaField("Alert_Status", "STRING", mode="REQUIRED"),
+#             # bigquery.SchemaField("EXPIRY_DT", "DATE", mode="REQUIRED"),
+#             ],
+#         write_disposition=project)
+#     try:
+#         try:
+#             client.get_table(table_id)  # Make an API request.
+#             print("Table {} already exists.".format(table_id))
+#             # Upload Current Dataframe
+#             job = client.load_table_from_dataframe(index_symbol_df, table_id,
+#                                                    job_config=job_config)  # Make an API request.
+#             job.result()  # Wait for the job to complete.
+#             table = client.get_table(table_id)  # Make an API request.
+#             print("Loaded {} rows and {} columns to {}".format(table.num_rows, len(table.schema), table_id))
+#
+#             bot.sendMessage(chat_id=CHANNEL_ID,
+#                             text=telegram_message)  # Telegram Bot for pushing message in telegram
+#             alert_status = f'Alert Created for {bba_symbol_val}'
+#         except NotFound:
+#             print("Table {} is not found. Proceed to create table".format(table_id))
+#             client.create_table(table_id)  # API request
+#             print(f"Created {table_id}.")
+#             # Upload Current Dataframe
+#             job = client.load_table_from_dataframe(index_symbol_df, table_id,
+#                                                    job_config=job_config)  # Make an API request.
+#             job.result()  # Wait for the job to complete.
+#
+#             table = client.get_table(table_id)  # Make an API request.
+#             print("Loaded {} rows and {} columns to {}".format(table.num_rows, len(table.schema), table_id))
+#             alert_status = f'Alert Created for {bba_symbol_val}'
+#     except exception as e:
+#         print(e)
+#         alert_status = f'ERROR in Creating Alert'
+#
+#     return alert_status
 
 # _____________________________________________________________________________________
 # Function for Modal

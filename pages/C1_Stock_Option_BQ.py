@@ -29,7 +29,7 @@ content_one_screen = html.Div([
                         id='opt_symbol_left',
                         options=[{'label': x, 'value': x}
                                  for x in fno_watchlist.Symbol],
-                        value='TATAMOTORS',  # default value
+                        value='TMPV',  # default value
                         multi=False,
                     ),
                     html.Label("Option Chain Expiry", style={'color':'blue', 'padding':'8px'}),
