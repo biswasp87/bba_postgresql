@@ -24,4 +24,3 @@ requests~=2.32.3
 protobuf~=5.27.3
 plotly~=5.23.0
 sqlalchemy
-psycopg2-binary
