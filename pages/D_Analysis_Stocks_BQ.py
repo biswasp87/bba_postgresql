@@ -288,106 +288,106 @@ def update_dropdown(n_clicks, n_clicks_next, dropdown_value, dropdown_opt_val, s
     else:
         value_analysis = dropdown_value
     return value_analysis
-
-# _____________________________________________________________________________________
-# FAVOURITE Stocks Selection and Management
-# _____________________________________________________________________________________
-
-@callback(Output('shortlisted_table', "columns"),
-          Output('shortlisted_table', "data"),
-          Input('df_shortlisted', 'data')
-          )
-def update_shortlisted_stock_table(shortlisted_table_data):
-    latest_table_df = pd.DataFrame(shortlisted_table_data)
-    return [{'name': i, 'id': i, 'deletable': True} for i in latest_table_df.columns if i != 'id'], \
-        latest_table_df.to_dict('records')
-
-@callback(
-    Output('df_shortlisted', 'data'),
-    State('df_shortlisted', 'data'),
-    Input('Add_Button', 'n_clicks'),
-    Input('Clear_Button', 'n_clicks'),
-    Input('Save_Button', 'n_clicks'),
-    Input('dropdown', 'value'),
-)
-def shortlisted_stock_data(df_shortlisted, Add_clicks, Clear_clicks, Save_Clicks, Stock_name):
-    existing_shortlisted_df = pd.DataFrame(df_shortlisted)
-    if existing_shortlisted_df.empty:
-        client = bigquery.Client()
-        sql_shortlisted = f"""
-            SELECT *
-            FROM `phrasal-fire-373510.Watchlist.Shortlisted`
-        """
-        existing_shortlisted_df = client.query(sql_shortlisted).to_dataframe()
-        if existing_shortlisted_df.empty:
-            existing_shortlisted_df = pd.DataFrame(columns=['FAVOURITE'])
-            print(existing_shortlisted_df)
-
-    ctx = dash.callback_context
-    trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
-
-    if trigger_id == 'Add_Button':
-        data = [['{}'.format(Stock_name)]]
-        new_shortlisted_df = pd.DataFrame(data, columns=['FAVOURITE'])
-        print(new_shortlisted_df)
-
-        vertical_concat = pd.concat([existing_shortlisted_df, new_shortlisted_df], axis=0)
-        print(vertical_concat)
-        return vertical_concat.to_dict('records')
-    elif trigger_id == 'Clear_Button':
-        existing_shortlisted_df = pd.DataFrame(columns=['FAVOURITE'])
-        client = bigquery.Client()
-        clear_dml_statement = ("TRUNCATE TABLE phrasal-fire-373510.Watchlist.Shortlisted")
-        clear_job = client.query(clear_dml_statement)
-        clear_job.result()
-        return existing_shortlisted_df.to_dict('records')
-    else:
-        return existing_shortlisted_df.to_dict('records')
-
-@callback(
-    Output('Shortlisted_BQ_Status', 'children'),
-    Input('df_shortlisted', 'data'),
-    Input('Save_Button', 'n_clicks'),
-)
-def shortlisted_BQ_save(shortlisted_saved_df, n_click_save):
-    shortlisted_saved_df = pd.DataFrame(shortlisted_saved_df)
-    ctx = dash.callback_context
-    trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
-
-    if trigger_id == 'Save_Button':
-        client = bigquery.Client()
-        try:
-            table_id = "phrasal-fire-373510.Watchlist.Shortlisted"
-            # project = "WRITE_APPEND"
-            project = "WRITE_TRUNCATE"
-            job_config = bigquery.LoadJobConfig(
-                schema=[
-                    bigquery.SchemaField("FAVOURITE", "STRING", mode="NULLABLE")
-                ],
-                write_disposition=project, )
-            try:
-                client.get_table(table_id)  # Make an API request.
-                # Upload Current Dataframe
-                job = client.load_table_from_dataframe(shortlisted_saved_df, table_id,
-                                                       job_config=job_config)  # Make an API request.
-                job.result()  # Wait for the job to complete.
-                table = client.get_table(table_id)  # Make an API request.
-                message = "List Saved"
-
-            except NotFound:
-                client.create_table(table_id)  # API request
-                # Upload Current Dataframe
-                job = client.load_table_from_dataframe(shortlisted_saved_df, table_id,
-                                                       job_config=job_config)  # Make an API request.
-                job.result()  # Wait for the job to complete.
-                table = client.get_table(table_id)  # Make an API request.
-                message = "List Saved"
-        except Exception as e:
-            print(f"***** ERROR at fetching : {e} ****")  # Print the ERROR Message
-            message = f"***** ERROR at fetching : {e} ****"
-    else:
-        message = 'Click on SAVE'
-    return message
+#
+# # _____________________________________________________________________________________
+# # FAVOURITE Stocks Selection and Management
+# # _____________________________________________________________________________________
+#
+# @callback(Output('shortlisted_table', "columns"),
+#           Output('shortlisted_table', "data"),
+#           Input('df_shortlisted', 'data')
+#           )
+# def update_shortlisted_stock_table(shortlisted_table_data):
+#     latest_table_df = pd.DataFrame(shortlisted_table_data)
+#     return [{'name': i, 'id': i, 'deletable': True} for i in latest_table_df.columns if i != 'id'], \
+#         latest_table_df.to_dict('records')
+#
+# @callback(
+#     Output('df_shortlisted', 'data'),
+#     State('df_shortlisted', 'data'),
+#     Input('Add_Button', 'n_clicks'),
+#     Input('Clear_Button', 'n_clicks'),
+#     Input('Save_Button', 'n_clicks'),
+#     Input('dropdown', 'value'),
+# )
+# def shortlisted_stock_data(df_shortlisted, Add_clicks, Clear_clicks, Save_Clicks, Stock_name):
+#     existing_shortlisted_df = pd.DataFrame(df_shortlisted)
+#     if existing_shortlisted_df.empty:
+#         client = bigquery.Client()
+#         sql_shortlisted = f"""
+#             SELECT *
+#             FROM `phrasal-fire-373510.Watchlist.Shortlisted`
+#         """
+#         existing_shortlisted_df = client.query(sql_shortlisted).to_dataframe()
+#         if existing_shortlisted_df.empty:
+#             existing_shortlisted_df = pd.DataFrame(columns=['FAVOURITE'])
+#             print(existing_shortlisted_df)
+#
+#     ctx = dash.callback_context
+#     trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
+#
+#     if trigger_id == 'Add_Button':
+#         data = [['{}'.format(Stock_name)]]
+#         new_shortlisted_df = pd.DataFrame(data, columns=['FAVOURITE'])
+#         print(new_shortlisted_df)
+#
+#         vertical_concat = pd.concat([existing_shortlisted_df, new_shortlisted_df], axis=0)
+#         print(vertical_concat)
+#         return vertical_concat.to_dict('records')
+#     elif trigger_id == 'Clear_Button':
+#         existing_shortlisted_df = pd.DataFrame(columns=['FAVOURITE'])
+#         client = bigquery.Client()
+#         clear_dml_statement = ("TRUNCATE TABLE phrasal-fire-373510.Watchlist.Shortlisted")
+#         clear_job = client.query(clear_dml_statement)
+#         clear_job.result()
+#         return existing_shortlisted_df.to_dict('records')
+#     else:
+#         return existing_shortlisted_df.to_dict('records')
+#
+# @callback(
+#     Output('Shortlisted_BQ_Status', 'children'),
+#     Input('df_shortlisted', 'data'),
+#     Input('Save_Button', 'n_clicks'),
+# )
+# def shortlisted_BQ_save(shortlisted_saved_df, n_click_save):
+#     shortlisted_saved_df = pd.DataFrame(shortlisted_saved_df)
+#     ctx = dash.callback_context
+#     trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
+#
+#     if trigger_id == 'Save_Button':
+#         client = bigquery.Client()
+#         try:
+#             table_id = "phrasal-fire-373510.Watchlist.Shortlisted"
+#             # project = "WRITE_APPEND"
+#             project = "WRITE_TRUNCATE"
+#             job_config = bigquery.LoadJobConfig(
+#                 schema=[
+#                     bigquery.SchemaField("FAVOURITE", "STRING", mode="NULLABLE")
+#                 ],
+#                 write_disposition=project, )
+#             try:
+#                 client.get_table(table_id)  # Make an API request.
+#                 # Upload Current Dataframe
+#                 job = client.load_table_from_dataframe(shortlisted_saved_df, table_id,
+#                                                        job_config=job_config)  # Make an API request.
+#                 job.result()  # Wait for the job to complete.
+#                 table = client.get_table(table_id)  # Make an API request.
+#                 message = "List Saved"
+#
+#             except NotFound:
+#                 client.create_table(table_id)  # API request
+#                 # Upload Current Dataframe
+#                 job = client.load_table_from_dataframe(shortlisted_saved_df, table_id,
+#                                                        job_config=job_config)  # Make an API request.
+#                 job.result()  # Wait for the job to complete.
+#                 table = client.get_table(table_id)  # Make an API request.
+#                 message = "List Saved"
+#         except Exception as e:
+#             print(f"***** ERROR at fetching : {e} ****")  # Print the ERROR Message
+#             message = f"***** ERROR at fetching : {e} ****"
+#     else:
+#         message = 'Click on SAVE'
+#     return message
 
 # _____________________________________________________________________________________
 # DISPLAY Graph
@@ -411,34 +411,7 @@ def update_graph_31(dropdown_exp_value, dropdown_value, dropdown_opt_value, drop
 
     # Import Data from Big Query
     # _______________________________________________________________________________________________________________
-    client = bigquery.Client()
-    sql_stock = f"""
-        SELECT TIMESTAMP, CUR_FUT_EXPIRY_DT,NEAR_FUT_EXPIRY_DT, 
-                            SYMBOL, EQ_OPEN_PRICE, EQ_HIGH_PRICE, EQ_LOW_PRICE, EQ_CLOSE_PRICE,
-                            EQ_TTL_TRD_QNTY, EQ_DELIV_QTY, EQ_DELIV_PER, EQ_QT,
-                            CUR_PE_STRIKE_PR_OIMAX, CUR_PE_STRIKE_PR_10MVOL,
-                            CUR_CE_STRIKE_PR_OIMAX, CUR_CE_STRIKE_PR_10MVOL,
-                            NEAR_CE_STRIKE_PR_OIMAX, NEAR_CE_STRIKE_PR_10MVOL,
-                            NEAR_PE_STRIKE_PR_OIMAX, NEAR_PE_STRIKE_PR_10MVOL,
-                            CUR_PE_OI_SUM, CUR_CE_OI_SUM,
-                            EQ_CHG_PER, FUT_COI, FUT_BUILD_UP,FUT_PRICE_COL, FUT_COI_EXPLOSION_COL,
-                            CUR_PCR, NEAR_PCR, BAR, QTCO0321, QTCO0321COL
-        FROM `phrasal-fire-373510.Big_Bull_Analysis.Master_Data_Equity`
-        WHERE SYMBOL = '{dropdown_value}'
-        ORDER BY TIMESTAMP DESC LIMIT {dropdown_n_days_value}
-    """
-    # df_stock = client.query(sql_stock).to_dataframe()
 
-    # # Import Data from Cloud storage Bucket (JSON)
-    # # _______________________________________________________________________________________________________________
-    # gcs_path = "gs://json_eq_fno_opt_master_data/stocks/" + dropdown_value+ ".json"
-    # # Read directly into a DataFrame
-    # df_stock = pd.read_json(gcs_path)
-
-    # Import Data from Render Postgre SQL
-    # _______________________________________________________________________________________________________________
-    # 1. Retrieve your External Database URL from your Render.com dashboard.
-    # It usually looks like: postgresql://user:password@external_host:port/database_name
     RENDER_EXTERNAL_DB_URL = "postgresql://prasenjit:rrbhbSbyRcNAQkmiPbjlLKkw4zwIKqxi@dpg-d8kkilho3t8c73eu0nu0-a/bigbullanalysis_db"
 
     print(f"Connecting to Render PostgreSQL to fetch data for: {dropdown_value}...")
