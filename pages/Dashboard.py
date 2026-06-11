@@ -14,8 +14,8 @@ import requests
 
 # PART I: Defining Google Storage Client & Bucket
 # ___________________________________________________________________________________________________________
-storage_client = storage.Client()
-bucket = storage_client.bucket('biswasp87')
+# storage_client = storage.Client()
+# bucket = storage_client.bucket('biswasp87')
 
 # PART II: Preparing the Layout
 # ___________________________________________________________________________________________________________
