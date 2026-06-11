@@ -26,9 +26,9 @@ from sqlalchemy import create_engine, text
 # _____________________________________________________________________________________
 # Pulling Data from Google Cloud Storage
 # _____________________________________________________________________________________
-watchlist = pd.read_csv("gs://bba_support_files/WL_ALL.csv")
-dropdown_opt_list = pd.read_csv("gs://bba_support_files/Dropdown_options.csv")
-Expiry_Date_Monthly = pd.read_csv("gs://bba_support_files/stock_expiry_dates.csv")
+watchlist = pd.read_csv("assets/WL_FNO.csv")
+dropdown_opt_list = pd.read_csv("assets/Dropdown_options.csv")
+Expiry_Date_Monthly = pd.read_csv("assets/stock_expiry_dates.csv")
 
 # _____________________________________________________________________________________
 # Layout for Order Placement inside Modal Layout
