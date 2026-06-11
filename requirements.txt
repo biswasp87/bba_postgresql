@@ -6,6 +6,7 @@ openpyxl
 numpy
 google-cloud
 google-cloud-storage
+google-cloud-bigquery
 pyarrow
 pytz
 fsspec
