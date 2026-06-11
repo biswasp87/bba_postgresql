@@ -95,7 +95,6 @@ navbar = dbc.Navbar(
     dark=True
 )
 
-
 @dash.callback(
     Output("navbar-collapse", "is_open"),
     [Input("navbar-toggler", "n_clicks")],

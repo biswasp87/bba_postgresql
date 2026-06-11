@@ -1,5 +1,5 @@
 import dash
-# To create meta tag for each page, define the title, image, and description.
+# To create meta tag for each page, define the title, image, and description .
 dash.register_page(
     __name__,
     path='/',

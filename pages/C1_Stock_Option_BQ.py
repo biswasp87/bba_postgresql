@@ -7,7 +7,7 @@ import pandas as pd
 from google.cloud import bigquery
 from datetime import datetime
 
-# To create meta tag for each page, define the title, image, and description.
+# To create meta tag for each page, define the title, image, and description .
 dash.register_page(
     __name__,
     # path='/',

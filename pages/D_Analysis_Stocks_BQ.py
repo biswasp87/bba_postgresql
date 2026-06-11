@@ -439,7 +439,7 @@ def update_graph_31(dropdown_exp_value, dropdown_value, dropdown_opt_value, drop
     # _______________________________________________________________________________________________________________
     # 1. Retrieve your External Database URL from your Render.com dashboard.
     # It usually looks like: postgresql://user:password@external_host:port/database_name
-    RENDER_EXTERNAL_DB_URL = "postgresql://prasenjit:rrbhbSbyRcNAQkmiPbjlLKkw4zwIKqxi@dpg-d8kkilho3t8c73eu0nu0-a.oregon-postgres.render.com/bigbullanalysis_db"
+    RENDER_EXTERNAL_DB_URL = "postgresql://prasenjit:rrbhbSbyRcNAQkmiPbjlLKkw4zwIKqxi@dpg-d8kkilho3t8c73eu0nu0-a/bigbullanalysis_db"
 
     print(f"Connecting to Render PostgreSQL to fetch data for: {dropdown_value}...")
     engine = create_engine(RENDER_EXTERNAL_DB_URL)
